@@ -11,6 +11,7 @@ import asyncio
 import json
 import os
 import uuid
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -27,6 +28,8 @@ from google.genai import types
 from agents.ecommerce_orchestrator import root_agent
 
 app = FastAPI(title="Insightron Ecommerce Assistant")
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
 
 # ADK runner setup
 session_service = InMemorySessionService()
@@ -100,12 +103,12 @@ async def reset_session(request: Request):
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    with open("static/index.html", "r") as f:
+    with open(STATIC_DIR / "index.html", "r", encoding="utf-8") as f:
         return f.read()
 
 
 # Serve static assets
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
 if __name__ == "__main__":
